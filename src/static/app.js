@@ -20,11 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        // Create a list of participants
+        const participantsList = details.participants.map(participant => `<li>${participant}</li>`).join("");
+
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <p><strong>Participants:</strong></p>
+          <ul>${participantsList || "<li>No participants yet</li>"}</ul>
+          <p class="registered-email" style="display: none;"></p> <!-- Placeholder for email -->
         `;
 
         activitiesList.appendChild(activityCard);
@@ -62,6 +68,11 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+
+        // Display the email under the registered activity
+        const registeredEmail = document.querySelector(".registered-email");
+        registeredEmail.textContent = `Registered Email: ${email}`;
+        registeredEmail.style.display = "block"; // Show the email
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
