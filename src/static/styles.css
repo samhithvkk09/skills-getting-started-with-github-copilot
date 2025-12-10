@@ -76,14 +76,28 @@ section h3 {
 
 .activity-card ul {
   margin-left: 20px;
-  margin-bottom: 10px;
-  padding-left: 15px;
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  background-color: #f0f0f0;
+  border-left: 3px solid #0066cc;
+  border-radius: 3px;
+  list-style: none;
 }
 
 .activity-card li {
   margin-bottom: 5px;
   color: #555;
   font-size: 14px;
+}
+
+.activity-card ul li {
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 14px;
+}
+
+.activity-card ul li:last-child {
+  margin-bottom: 0;
 }
 
 .activity-card li:before {
