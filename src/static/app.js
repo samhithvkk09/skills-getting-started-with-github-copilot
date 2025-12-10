@@ -19,7 +19,18 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
-        const participantsList = details.participants.map(participant => `<li>${participant}</li>`).join("");
+        // Render participants with delete icon
+        let participantsList = "";
+        if (details.participants.length > 0) {
+          participantsList = details.participants.map(participant => `
+            <span class="participant-item">
+              <span class="participant-email">${participant}</span>
+              <span class="delete-participant" title="Remove participant" data-activity="${name}" data-email="${participant}">&#128465;</span>
+            </span>
+          `).join("");
+        } else {
+          participantsList = `<span class='no-participants'>No participants yet</span>`;
+        }
 
         activityCard.innerHTML = `
           <h4>${name}</h4>
@@ -28,9 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
           <div class="participants-section">
             <p><strong>Participants:</strong></p>
-            <ul>${participantsList || "<li class='no-participants'>No participants yet</li>"}</ul>
+            <div class="participants-list">${participantsList}</div>
           </div>
-          <p class="registered-email" style="display: none;"></p> <!-- Placeholder for email -->
+          <p class="registered-email" style="display: none;"></p>
         `;
 
         activitiesList.appendChild(activityCard);
@@ -40,6 +51,29 @@ document.addEventListener("DOMContentLoaded", () => {
         option.value = name;
         option.textContent = name;
         activitySelect.appendChild(option);
+      });
+
+      // Add event listeners for delete icons
+      document.querySelectorAll('.delete-participant').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+          const activity = icon.getAttribute('data-activity');
+          const email = icon.getAttribute('data-email');
+          if (confirm(`Unregister ${email} from ${activity}?`)) {
+            try {
+              const res = await fetch(`/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(email)}`, {
+                method: 'DELETE'
+              });
+              if (res.ok) {
+                fetchActivities(); // Refresh list
+              } else {
+                const err = await res.json();
+                alert(err.detail || 'Failed to unregister participant.');
+              }
+            } catch (error) {
+              alert('Error unregistering participant.');
+            }
+          }
+        });
       });
     } catch (error) {
       activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
@@ -68,11 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
-
-        // Display the email under the registered activity
-        const registeredEmail = document.querySelector(".registered-email");
-        registeredEmail.textContent = `Registered Email: ${email}`;
-        registeredEmail.style.display = "block"; // Show the email
+        // Refresh activities list to show new participant
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
