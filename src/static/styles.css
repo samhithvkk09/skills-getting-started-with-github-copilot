@@ -74,6 +74,23 @@ section h3 {
   margin-bottom: 8px;
 }
 
+.activity-card ul {
+  margin-left: 20px;
+  margin-bottom: 10px;
+  padding-left: 15px;
+}
+
+.activity-card li {
+  margin-bottom: 5px;
+  color: #555;
+  font-size: 14px;
+}
+
+.activity-card li:before {
+  content: "👤 ";
+  margin-right: 5px;
+}
+
 .form-group {
   margin-bottom: 15px;
 }
